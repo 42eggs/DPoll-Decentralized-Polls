@@ -1,19 +1,36 @@
-require("@nomicfoundation/hardhat-toolbox");
-require("@nomicfoundation/hardhat-chai-matchers");
-// require("@nomiclabs/hardhat-ethers");
-require("dotenv").config();
+require("@nomicfoundation/hardhat-toolbox")
+require("@nomicfoundation/hardhat-chai-matchers")
+require("dotenv").config()
+require("@nomiclabs/hardhat-etherscan")
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-    solidity: "0.8.17",
-    goerli: {
-        chainId: 5,
-        url: process.env.GOERLI_API_URL,
-        accounts: [process.env.PRIVATE_KEY],
+    solidity: {
+        version: "0.8.17",
+        settings: {
+            optimizer: {
+                enabled: true,
+                runs: 1000,
+            },
+        },
     },
-    mainnet: {
-        chainId: 1,
-        url: process.env.MAINNET_API_URL,
-        accounts: [process.env.PRIVATE_KEY],
+    defaultNetwork: "hardhat",
+    networks: {
+        mumbai: {
+            chainId: 80001,
+            url: process.env.MUMBAI_API_URL,
+            accounts: [process.env.PRIVATE_KEY],
+        },
+        mainnet: {
+            chainId: 137,
+            url: process.env.MAINNET_API_URL,
+            accounts: [process.env.PRIVATE_KEY],
+        },
     },
-};
+    etherscan: {
+        apiKey: {
+            polygonMumbai: process.env.POLYGONSCAN_API_KEY,
+            polygon: process.env.POLYGONSCAN_API_KEY,
+        },
+    },
+}

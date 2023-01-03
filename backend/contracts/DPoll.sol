@@ -4,44 +4,66 @@ pragma solidity ^0.8.17;
 // Uncomment this line to use console.log
 // import "hardhat/console.sol";
 
-//MASSIVE OPTIMIZATION REQUIRED
-//Find a way to use time/date in solidity in order to calculate end time of a vote
-//Need to limit string length for title, descriptions and options (maybe something with bytes?)
-
 contract DPoll {
     event voteRecorded(address indexed voter, uint indexed option_indexed);
     string title;
     string description;
     string[] options;
+    uint immutable duration;
+    uint immutable startTime;
+    address immutable creator;
+
     mapping(uint => uint) optionsWithVotes;
     uint immutable totalEligibleVoters;
-    uint votersWhoHaveVoted;
+    uint numOfVotersWhoHaveVoted;
     struct Voter {
         bool isEligibleForVoting;
         bool hasVoted;
         uint hasVotedOn;
     }
     mapping(address => Voter) voters;
-    uint immutable endBlockTime;
-    address immutable creator;
 
     constructor(
         string memory _title,
         string memory _description,
         string[] memory _options,
         address[] memory _eligbleVoters,
-        uint _endBlockTime,
+        uint _startTime,
+        uint _duration,
         address _creator
     ) {
         title = _title;
         description = _description;
         options = _options;
         totalEligibleVoters = _eligbleVoters.length;
+        startTime = _startTime;
+        duration = _duration;
+        creator = _creator;
+
         for (uint i = 0; i < totalEligibleVoters; i++) {
             voters[_eligbleVoters[i]].isEligibleForVoting = true;
         }
-        endBlockTime = _endBlockTime;
-        creator = _creator;
+    }
+
+    //some getter functions
+    function getTitle() public view returns (string memory) {
+        return title;
+    }
+
+    function getDescription() public view returns (string memory) {
+        return description;
+    }
+
+    function getStartTime() public view returns (uint) {
+        return startTime;
+    }
+
+    function getDuration() public view returns (uint) {
+        return duration;
+    }
+
+    function getCreator() public view returns (address) {
+        return creator;
     }
 
     //this lets an eligible candidate vote, if not already voted and returns true when the entire function executes successfully
@@ -52,7 +74,7 @@ contract DPoll {
         voters[_candidate].hasVoted = true;
         voters[_candidate].hasVotedOn = _optionIndex;
         optionsWithVotes[_optionIndex]++;
-        votersWhoHaveVoted++;
+        numOfVotersWhoHaveVoted++;
         emit voteRecorded(_candidate, _optionIndex);
         return true;
     }
@@ -97,8 +119,8 @@ contract DPoll {
         return getOptionString(voters[_candidate].hasVotedOn);
     }
 
-    function getVotersWhoHaveVoted() public view returns (uint) {
-        return votersWhoHaveVoted;
+    function getNumOfVotersWhoHaveVoted() public view returns (uint) {
+        return numOfVotersWhoHaveVoted;
     }
 
     //gets the option string based on the index
@@ -127,6 +149,6 @@ contract DPoll {
 
     //check if voting time has ended
     function votingTimeHasEnded() public view returns (bool) {
-        return endBlockTime < block.timestamp;
+        return (startTime + duration) < block.timestamp;
     }
 }

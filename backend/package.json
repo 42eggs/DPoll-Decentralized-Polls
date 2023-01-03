@@ -17,7 +17,10 @@
     "hardhat": "^2.12.3"
   },
   "dependencies": {
+    "@nomiclabs/hardhat-etherscan": "^3.1.4",
     "@openzeppelin/contracts": "^4.8.0",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "prettier": "^2.8.1",
+    "prettier-plugin-solidity": "^1.1.1"
   }
 }
