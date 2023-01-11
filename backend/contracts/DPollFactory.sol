@@ -11,6 +11,7 @@ contract DPollFactory {
 
     //addresses array of the polls
     address[] pollsList;
+    mapping(address => address[]) pollsByCreators;
 
     // Function to create a new instance of the poll contract
     function createPoll(
@@ -33,6 +34,7 @@ contract DPollFactory {
             )
         );
         pollsList.push(newPoll);
+        pollsByCreators[msg.sender].push(newPoll);
         emit pollCreated(newPoll, msg.sender);
     }
 
